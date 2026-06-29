@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-frontend-deployment
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: expense-frontend
+
+  template:
+    metadata:
+      labels:
+        app: expense-frontend
+
+    spec:
+      containers:
+        - name: expense-frontend
+          image: khalilart/expense-tracker-frontend:latest
+          ports:
+            - containerPort: 80
+
+          env:
+            - name: VITE_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VITE_API_URL
