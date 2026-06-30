@@ -85,7 +85,20 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 });
+
 app.use('/api', limiter);
+
+/**
+ * -----------------------------
+ * ROOT ROUTE
+ * -----------------------------
+ */
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Expense Tracker API is running 🚀',
+  });
+});
 
 /**
  * -----------------------------
