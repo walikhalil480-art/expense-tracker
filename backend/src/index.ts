@@ -31,23 +31,45 @@ app.use(helmet());
  * -----------------------------
  */
 
+
 const allowedOrigins = config.corsOrigin;
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, mobile apps)
+    // Allow requests with no origin (Postman, curl, mobile apps)
     if (!origin) {
       return callback(null, true);
     }
 
+    // Allow explicitly configured origins
     if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow localhost with any port (Vite, React, etc.)
+    if (/^http:\/\/localhost:\d+$/.test(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow 127.0.0.1 with any port (Minikube service tunnel)
+    if (/^http:\/\/127\.0\.0\.1:\d+$/.test(origin)) {
       return callback(null, true);
     }
 
     return callback(new Error(`CORS blocked for origin: ${origin}`));
   },
+
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+
+  methods: [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+  ],
+
   allowedHeaders: [
     'Content-Type',
     'Authorization',
