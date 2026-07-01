@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +26,7 @@ jobs:
       # Build & Push Backend
       ################################################
 
-      - name: Build Backend Image
+      - name: Build and Push Backend Image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
@@ -37,7 +37,7 @@ jobs:
       # Build & Push Frontend
       ################################################
 
-      - name: Build Frontend Image
+      - name: Build and Push Frontend Image
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
@@ -45,25 +45,8 @@ jobs:
           tags: khalilart/expense-tracker-frontend:latest
 
       ################################################
-      # Kubernetes Deployment
+      # Finish
       ################################################
 
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
-
-      - name: Configure Kubernetes
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
-
-      - name: Restart Backend Deployment
-        run: kubectl rollout restart deployment expense-backend-deployment
-
-      - name: Restart Frontend Deployment
-        run: kubectl rollout restart deployment expense-frontend-deployment
-
-      - name: Wait for Backend
-        run: kubectl rollout status deployment expense-backend-deployment
-
-      - name: Wait for Frontend
-        run: kubectl rollout status deployment expense-frontend-deployment
+      - name: Success
+        run: echo "Docker images built and pushed successfully!"
